@@ -4,6 +4,8 @@ A replacement [AMD](https://github.com/amdjs/amdjs-api/wiki/AMD) loader for
 [RequireJS](http://requirejs.org). It is a smaller "shim" loader, providing the
 minimal AMD API footprint that includes [loader plugin](http://requirejs.org/docs/plugins.html) support.
 
+This fork adds support for loading external module dependencies. It will use requirejs if it is loaded, or check the window object for a property with a matching name.
+
 ## Why
 
 Some developers like to use the AMD API to code modular JavaScript, but after doing an optimized build,
