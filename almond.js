@@ -1,5 +1,5 @@
 /**
- * @license almond 0.2.9 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
+ * @license almond 0.3.0 Copyright (c) 2011-2014, The Dojo Foundation All Rights Reserved.
  * Available via the MIT or new BSD license.
  * see: http://github.com/jrburke/almond for details
  */
@@ -150,7 +150,15 @@ var requirejs, require, define;
             //A version of a require function that passes a moduleName
             //value for items that may need to
             //look up paths relative to the moduleName
-            return req.apply(undef, aps.call(arguments, 0).concat([relName, forceSync]));
+            var args = aps.call(arguments, 0);
+
+            //If first arg is not require('string'), and there is only
+            //one arg, it is the array form without a callback. Insert
+            //a null so that the following concat is correct.
+            if (typeof args[0] !== 'string' && args.length === 1) {
+                args.push(null);
+            }
+            return req.apply(undef, args.concat([relName, forceSync]));
         };
     }
 
@@ -301,18 +309,18 @@ var requirejs, require, define;
                     map.p.load(map.n, makeRequire(relName, true), makeLoad(depName), {});
                     args[i] = defined[depName];
                 } else {
-	                // Try to use requirejs
-	                if ((typeof window.requirejs === 'function') && window.requirejs.defined(depName)) {
-		                args[i] = window.requirejs(depName);
-	                }
-	                if (args[i] === undefined) {
-		                if (window[depName] !== undefined) {
-			                // Use the global
-			                args[i] = window[depName];
-		                } else {
-			                throw new Error(name + ' missing ' + depName);
-		                }
-	                }
+                    // Try to use requirejs
+                    if (window && (typeof window.requirejs === 'function') && window.requirejs.defined(depName)) {
+                        args[i] = window.requirejs(depName);
+                    }
+                    if (window && (args[i] === undefined)) {
+                        if (window && (window[depName] !== undefined)) {
+                            // Use the global
+                            args[i] = window[depName];
+                        } else {
+                            throw new Error(name + ' missing ' + depName);
+                        }
+                    }
                 }
             }
 
